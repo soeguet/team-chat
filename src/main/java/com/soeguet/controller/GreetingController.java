@@ -1,36 +1,34 @@
 package com.soeguet.controller;
 
-import com.soeguet.entity.Greeting;
-import com.soeguet.entity.HelloMessage;
+import com.soeguet.entity.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.util.HtmlUtils;
 
 @Controller
 @Slf4j
 public class GreetingController {
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    @CrossOrigin
-    public Greeting greeting(HelloMessage message) throws Exception {
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
-        log.info("message: " + message);
+    public GreetingController(SimpMessagingTemplate simpMessagingTemplate) {this.simpMessagingTemplate = simpMessagingTemplate;}
 
-        Thread.sleep(1000); // simulated delay
-        return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.name()) + "!");
-    }
-    @MessageMapping("/hello2")
-    @SendTo("/topic/greetings2")
-    public Greeting greeting2(HelloMessage message) throws Exception {
+    @MessageMapping("/message")
+    @SendTo("/chatroom/public")
+    public Message receiveMessage(@Payload Message message) {
 
-        log.info("message: " + message);
-
-        Thread.sleep(1000); // simulated delay
-        return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.name()) + "!");
+        return message;
     }
 
+    @MessageMapping("/private-message")
+    public Message recMessage(@Payload Message message) {
+
+        simpMessagingTemplate.convertAndSendToUser(message.message(),
+                                                   "/private",
+                                                   message);
+        return message;
+    }
 }
