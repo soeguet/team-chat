@@ -1,6 +1,6 @@
 import {useState} from 'react'
 
-export default function Comment() {
+export default function Comment({message}) {
     const [show, setShow] = useState(true)
 
     return (
@@ -14,15 +14,15 @@ export default function Comment() {
                         <div className="w-0 flex-1 p-4">
                             <div className="flex items-start">
                                 <div className="flex-shrink-0 pt-0.5">
-                                    <img
+                                    <img hidden={true}
                                         className="h-10 w-10 rounded-full"
                                         src=""
                                         alt=""
                                     />
                                 </div>
                                 <div className="ml-3 w-0 flex-1">
-                                    <p className="text-sm font-medium text-gray-900">Emilia Gates</p>
-                                    <p className="mt-1 text-sm text-gray-500">Sure! 8:30pm works great!</p>
+                                    <p className="text-sm font-medium text-gray-900">name</p>
+                                    <p className="mt-1 text-sm text-gray-500">{message}</p>
                                 </div>
                             </div>
                         </div>
