@@ -1,31 +1,45 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
+import Comment from "./Comment.jsx";
 
 export default function ChatRoom() {
 
-    let stompClient = null;
+    const [stompClient, setStompClient] = useState(null)
+    const [textArea, setTextArea] = useState('')
+    const [message, setMessage] = useState('');
+    const [publicChats, setPublicChats] = useState(["hi"]);
+    const [userData, setUserData] = useState({
+        username: '',
+        receivername: '',
+        connected: false,
+        message: ''
+    });
 
-    const [message, setMessage] = useState('')
-
+    //initial connection to the server and updating stompClient
     useEffect(() => {
         return () => {
             let Sock = new SockJS('http://localhost:8080/ws');
-            stompClient = over(Sock);
-            stompClient.connect({},onConnected, onError);
+            let stompClientInit = Stomp.over(Sock);
+            stompClientInit.connect({}, () => onConnected(stompClientInit), onError);
+
+            setStompClient(stompClientInit);
         };
     }, []);
 
-    const onConnected = () => {
+    //Callback in function, otherwise stompClient will be null, since the connection is too fast
+    const onConnected = (client) => {
+        console.log(client.toString());
+        setStompClient(client);
+        client.subscribe('/chatroom/public', onMessageReceived);
+    };
 
-        console.log("Connected!")
+    const onMessageReceived = (payload) => {
+        let payloadData = JSON.parse(payload.body);
 
-        // setUserData({...userData,"connected": true});
-        // stompClient.subscribe('/chatroom/public', onMessageReceived);
-        // stompClient.subscribe('/user/'+userData.username+'/private', onPrivateMessage);
-        // userJoin();
+        publicChats.push(payloadData.message);
+        setPublicChats([...publicChats]);
     }
-
 
     const onError = (err) => {
         console.log(err);
@@ -34,15 +48,36 @@ export default function ChatRoom() {
 
     function sendMessage() {
 
-        stompClient.send("/app/message", {}, JSON.stringify("Hey!"))
+            const chatMessage = {
+                message: textArea
+            };
+
+            stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
+            setTextArea('')
+
     }
 
-    return(
+    return (
 
         <>
             <h1>{message}</h1>
 
-            <button onClick={sendMessage}>Hello</button>
+            <div>{publicChats.map(
+                (data,index) => (
+
+                    <div key={index}><Comment /></div>
+                )
+            )}</div>
+
+
+
+
+            <div>
+                <textarea value={textArea} onChange={e => setTextArea(e.target.value)}></textarea>
+                <button onClick={sendMessage}>Hello</button>
+            </div>
+
         </>
     )
 }
+

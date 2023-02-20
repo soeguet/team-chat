@@ -20,6 +20,9 @@ public class GreetingController {
     @SendTo("/chatroom/public")
     public Message receiveMessage(@Payload Message message) {
 
+        log.info(""+message);
+
+
         return message;
     }
 
