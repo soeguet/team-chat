@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
 
-var stompClient =null;
+let stompClient = null;
+
 const ChatRoom = () => {
+
     const [privateChats, setPrivateChats] = useState(new Map());
     const [publicChats, setPublicChats] = useState([]);
     const [tab,setTab] =useState("CHATROOM");
@@ -15,12 +17,15 @@ const ChatRoom = () => {
     });
     useEffect(() => {
         console.log(userData);
+        const apiKey = process.env.REACT_APP_API_KEY;
     }, [userData]);
 
     const connect =()=>{
+
         let Sock = new SockJS('http://localhost:8080/ws');
         stompClient = over(Sock);
         stompClient.connect({},onConnected, onError);
+
     }
 
     const onConnected = () => {

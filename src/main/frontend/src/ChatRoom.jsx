@@ -2,6 +2,8 @@ import React, {useEffect, useRef, useState} from 'react'
 import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
 import Comment from "./Comment.jsx";
+import env from "react-dotenv";
+import Pusher from "pusher-js";
 
 export default function ChatRoom() {
 
@@ -15,25 +17,36 @@ export default function ChatRoom() {
         connected: false,
         message: ''
     });
-    const chatpanel = React.useRef(null);
+    const chatPanel = React.useRef(null);
+
+    useEffect(() => {
+        return () => {
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+
+            const pusher = new Pusher(
+                import.meta.env.VITE_PUSHER_KEY, {
+                cluster: import.meta.env.VITE_PUSHER_CLUSTER
+            });
+
+            const channel = pusher.subscribe('Team-Chat-AiV');
+            channel.bind('my-event', function(data) {
+                alert(JSON.stringify(data));
+            });
+        };
+    }, []);
+
 
 
     useEffect(() => {
         scrollToBottomOfDiv()
+
     }, [publicChats.length]);
-
-
-
-
-
-
-
-
 
     //initial connection to the server and updating stompClient
     useEffect(() => {
         return () => {
-            let Sock = new SockJS('http://192.168.178.169:8080/ws');
+            let Sock = new SockJS('http://localhost:8080/ws');
             let stompClientInit = Stomp.over(Sock);
             stompClientInit.connect({}, () => onConnected(stompClientInit), onError);
 
@@ -90,7 +103,7 @@ export default function ChatRoom() {
 
     function scrollToBottomOfDiv() {
 
-        chatpanel.current?.scrollIntoView({ behavior: "smooth", block:"end" })
+        chatPanel.current?.scrollIntoView({ behavior: "smooth", block:"end" })
     }
 
 
@@ -109,7 +122,7 @@ export default function ChatRoom() {
                     <div>
                         {/* Replace with your content */}
                         <div className="py-4 grid h-full">
-                            <div className="rounded-lg border-4 border-dashed border-gray-200" ref={chatpanel}>
+                            <div className="rounded-lg border-4 border-dashed border-gray-200" ref={chatPanel}>
                                 <div className={'container '}  >
                                     {publicChats.map(
                                     (data,index) => (
