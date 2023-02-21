@@ -1,11 +1,10 @@
 import {useState} from 'react'
 
 export default function Comment({message}) {
-    const [show, setShow] = useState(true)
 
     return (
         <>
-            <div className="      sm:items-start mt-2 mb-2">
+            <div className="sm:items-start mt-2 mb-2">
                 <div className="flex w-full flex-col items-center space-y-4 ">
                     {/* Notification panel, dynamically insert this into the live region when it needs to be displayed */}
 
@@ -25,9 +24,6 @@ export default function Comment({message}) {
                                     <p className="mt-1 text-sm text-gray-500">{message}</p>
                                 </div>
                             </div>
-                        </div>
-                        <div className="flex border-l border-gray-200">
-
                         </div>
                     </div>
                 </div>
