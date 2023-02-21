@@ -53,6 +53,11 @@ export default function ChatRoom() {
 
         publicChats.push(payloadData.message);
         setPublicChats([...publicChats]);
+
+        Notification.requestPermission().then(function(permission) {
+            console.log('permiss', permission)
+            const notification = new Notification('HI')
+        });
     }
 
     const onError = (err) => {
