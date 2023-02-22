@@ -17,26 +17,25 @@ public class GreetingController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public GreetingController(SimpMessagingTemplate simpMessagingTemplate) {this.simpMessagingTemplate = simpMessagingTemplate;}
+    public GreetingController(SimpMessagingTemplate simpMessagingTemplate) {
+        this.simpMessagingTemplate = simpMessagingTemplate;
+    }
 
     @MessageMapping("/message")
     @SendTo("/chatroom/public")
     public Message receiveMessage(@Payload Message message) throws Exception {
 
-        log.info(""+message);
+        log.info("" + message);
 
+        Pusher pusher = new Pusher(System.getenv("pusher_app_id"),
+                System.getenv("pusher_key"),
+                System.getenv("pusher_secret"));
+        pusher.setCluster(System.getenv("pusher_cluster"));
+        pusher.setEncrypted(true);
 
-        try (Pusher pusher = new Pusher(System.getenv("pusher_app_id"),
-                                        System.getenv("pusher_key"),
-                                        System.getenv("pusher_secret"))) {
-            pusher.setCluster(System.getenv("pusher_cluster"));
-            pusher.setEncrypted(true);
-
-            pusher.trigger("Team-Chat-AiV",
-                           "my-event",
-                           Collections.singletonMap("message",
-                                                    "hello world"));
-        }
+        pusher.trigger("Team-Chat-AiV",
+                "my-event",
+                Collections.singletonMap("message", message));
 
         return message;
     }
@@ -45,8 +44,8 @@ public class GreetingController {
     public Message recMessage(@Payload Message message) {
 
         simpMessagingTemplate.convertAndSendToUser(message.message(),
-                                                   "/private",
-                                                   message);
+                "/private",
+                message);
         return message;
     }
 }

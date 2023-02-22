@@ -13,6 +13,7 @@
     "@heroicons/react": "^2.0.16",
     "@tailwindcss/forms": "^0.5.3",
     "dotenv": "^16.0.3",
+    "firebase": "^9.17.1",
     "net": "^1.0.2",
     "pusher-js": "^8.0.1",
     "react": "^18.2.0",

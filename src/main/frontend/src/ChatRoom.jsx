@@ -5,6 +5,13 @@ import Comment from "./Comment.jsx";
 import env from "react-dotenv";
 import Pusher from "pusher-js";
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+
+
 export default function ChatRoom() {
 
     const [stompClient, setStompClient] = useState(null)
@@ -18,6 +25,19 @@ export default function ChatRoom() {
         message: ''
     });
     const chatPanel = React.useRef(null);
+
+    // Your web app's Firebase configuration
+
+    const firebaseConfig = {
+        //To-Do Firebase config
+    };
+
+
+// Initialize Firebase
+
+    const app = initializeApp(firebaseConfig);
+
+
 
     useEffect(() => {
         return () => {
@@ -69,7 +89,7 @@ export default function ChatRoom() {
 
         Notification.requestPermission().then(function(permission) {
             console.log('permiss', permission)
-            const notification = new Notification('HI')
+            const notification = new Notification(payload.body)
         });
     }
 
